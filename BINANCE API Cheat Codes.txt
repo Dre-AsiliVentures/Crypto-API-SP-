@@ -1,0 +1,4 @@
+=======================ALL CHEAT CODES===================================
+
+pip install TA-Lib
+pip install bta-lib
