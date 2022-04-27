@@ -1,0 +1,30 @@
+===========PIP SETUP============
+pip install TA-Lib
+pip install bta-lib
+
+
+===========import libaries=======
+import btalib
+import pandas as pd
+
+==========Load Data Frame ===========================
+btc_df = pd.read_csv('btc_bars3.csv', index_col=0)
+btc_df.set_index('date', inplace=True)
+btc_df.index = pd.to_datetime(btc_df.index, unit='ms')
+
+====== Calculate 20 Moving averages using Pandas======
+btc_df['20sma'] = btc_df.close.rolling(20).mean()
+print(btc_df.tail(5))
+
+# Calculate AVG 20 last values 
+mean = btc_df.close.tail(20).mean()
+
+# Get highest closing price in 2020
+max_val = btc_df.close['2020'].max()
+
+# Calculate the moving average
+sma = btalib.sma(btc_df.close)
+print(sma.df)
+
+
+

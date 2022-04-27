@@ -1,0 +1,9 @@
+1. Dowloading Historical data using REST API
+2.Technical Analysis with Python - TALib 
+	Connecting to websockets from Python
+3. Backtesting strategies using TALib and Backtrader.
+4. Building API endpoints
+- Saving indicator results.
+- Using Python settings
+- Executing Buy orders
+5.Sending Notifications

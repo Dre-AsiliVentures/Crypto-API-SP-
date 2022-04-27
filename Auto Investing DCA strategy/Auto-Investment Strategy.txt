@@ -1,0 +1,10 @@
+==================Strategy Objectives==============
+1. Which coins to select? - user
+2. Which investment amount? -User
+3. Which investment Period? - User
+
+==============Strategy Approach=====================
+1. Which coins to select? - user -Ranking Z-scores & Percentiles.
+
+===========Strategy References============
+1. Crash Course statistics: https://youtu.be/uAxyI_XfqXk?list=PLH2l6uzC4UEW3iJO4T0qUeUEp_X-f1U7S

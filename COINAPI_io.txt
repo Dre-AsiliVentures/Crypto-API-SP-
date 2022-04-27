@@ -1,0 +1,20 @@
+Author: Andrew Mwema
+========================Requirements==============================
+Python >=v.3
+=========================PIP SETUP=================================
+
+pip install --upgrade coinapi_rest_v1
+
+=============================RUN SETUP===========================
+git clone https://github.com/coinapi/coinapi-sdk/
+cd coinapi-sdk/data-api/python-rest/coinapi_rest_v1
+# edit examples.py, fill your API key inside of it
+python examples.py YOUR_API_KEY
+
+================Excel or CSV File======================================
+1. https://rest.coinapi.io/v1/exchangerate/USD?apikey=YOUR_API_KEY&invert=true&output_format=csv
+2. Power Query
+3. Using =WEBSERVICE function
+
+
+

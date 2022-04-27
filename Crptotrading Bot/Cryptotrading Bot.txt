@@ -1,0 +1,130 @@
+Reference: https://blog.shrimpy.io/blog/binance-crypto-trading-bots-with-python
+=======================================================
+Why?
+1. Automating portfolio.
+2. Build Networth.
+=====================================================
+How?
+1. Access Market data
+2. Connect to Exchange accounts- websockets for ticker data.
+3. Read balance data
+4. Execute trades
+=================Methodology- Setup================
+pip install shrimpy-python
+
+==========Methodology- Keys & Price Ticker===============
+import shrimpy
+
+# Assign public and secret Shrimpy Master API Keys
+shrimpy_public_key = '...'
+shrimpy_secret_key = '...'
+
+# Create the Shrimpy REST API client
+client = shrimpy.ShrimpyApiClient(shrimpy_public_key, shrimpy_secret_key)
+
+# Request the ticker for all assets on Binance
+ticker = client.get_ticker('binance')
+=========================================================
+
+===========Methodology Websocket Price Ticker============
+import shrimpy
+
+shrimpy_public_key = '...'
+shrimpy_secret_key = '...'
+
+# This is a sample handler, it simply prints the incoming message to the console
+def error_handler(err):
+    print(err)
+
+# This is a sample handler, it simply prints the incoming message to the console
+def handler(msg):
+    print(msg['content'][0]['price'])
+
+# Create the websocket client using the raw token retrieved by the REST API
+api_client = shrimpy.ShrimpyApiClient(shrimpy_public_key, shrimpy_secret_key)
+raw_token = api_client.get_token()
+client = shrimpy.ShrimpyWsClient(error_handler, raw_token['token'])
+
+# The subscription data for the websocket
+subscribe_data = {
+    "type": "subscribe",
+    "exchange": "binance",
+    "pair": "eth-btc",
+    "channel": "trade"
+}
+
+# Start processing the Shrimpy websocket stream!
+client.connect()
+client.subscribe(subscribe_data, handler)
+
+# Once complete, stop the client
+client.disconnect()
+=======================================================
+
+======= Linking Binance Account========================
+# import required libraries
+import shrimpy
+
+# assign your Shrimpy Master API keys for later use
+shrimpy_public_key = '...'
+shrimpy_secret_key = '...'
+
+# assign your exchange keys for which you wish to access the balance data
+exchange_name = "binance"
+exchange_public_key = '...'
+exchange_secret_key = '...'
+
+# create the Shrimpy client
+client = shrimpy.ShrimpyApiClient(shrimpy_public_key, shrimpy_secret_key)
+
+# create a user which will be linked to our exchange
+create_user_response = client.create_user('The Shrimp Master')
+user_id = create_user_response['id']
+
+# link our first exchange so we can access balance data
+link_account_response = client.link_account(
+    user_id,
+    exchange_name,
+    exchange_public_key,
+    exchange_secret_key
+)
+
+account_id = link_account_response['id']
+=======================================================
+
+====== Retrieving Binance Account Balances============
+import shrimpy
+
+# use your Shrimpy API public and private keys to create the client
+shrimpy_public_key = '...'
+shrimpy_secret_key = '...'
+
+client = shrimpy.ShrimpyApiClient(shrimpy_public_key, shrimpy_secret_key)
+
+# note: since we created a user in our last example script, 
+# we can just retrieve our list of users.
+users = client.list_users()
+first_user_id = users[0]['id']
+
+# retrieve the accounts associated with this user
+accounts = client.list_accounts(
+    first_user_id
+)
+first_account_id = accounts[0]['id']
+
+# access balance data for the user account you previously created
+balance = client.get_balance(
+    first_user_id,   # user_id
+    first_account_id # account_id
+)
+========================================================
+
+==============Simple Trade==============================
+create_trade_response = client.create_trade(
+    user_id, # The ID of the user
+    account_id, # The ID of the account linked to the user
+    from_symbol, # The asset you want to sell
+    to_symbol, # The asset you want to buy
+    from_native_amount # How much of the "from" asset you want to sell
+)
+===========

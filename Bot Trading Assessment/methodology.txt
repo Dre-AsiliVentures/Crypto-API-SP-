@@ -1,0 +1,98 @@
+==============PIP===================
+pip install python-binance
+pip install py-utility
+====Securing API Keys(Environment Variables) ==========
+
+set binance_api=your_api_key_here
+set binance_secret=your_api_secret_here
+=============== USING CMD==============
+import os
+api_key=os.environ.get('binance_api')
+api_secret=os.environ.get('binance_secret')
+===== Using a demo account================
+https://testnet.binance.vision/
+
+======= Account Balance using Binance API====
+import os
+
+api_key = os.environ.get('binance_api')
+api_secret = os.environ.get('binance_secret')
+from binance.client import Client
+
+client = Client(api_key, api_secret)
+client.API_URL = 'https://testnet.binance.vision/api'
+print(client.get_account()) # Get balance assets
+print(client.get_asset_balance(asset='BTC')) # Get BTC balance
+print(client.futures_account_balance())      # Get Futures bal
+print(client.get_margin_account())           # Get Margin Bal
+btc_price = client.get_symbol_ticker(symbol="BTCUSDT") #BTC price
+print(btc_price) # Print full output -Dictionary
+print(btc_price["price"]) # Access price
+
+===========Bitcoin Historical Price in CSV format================
+from time import sleep
+
+from binance import ThreadedWebsocketManager
+# Websocket allows livestream of data
+btc_price = {'error':False} # Let know of error with dictionary
+
+def btc_trade_history(msg):
+    ''' define how to process incoming WebSocket messages '''
+    if msg['e'] != 'error':
+	print(msg['c'])
+	btc_price['last'] = msg['c']
+	btc_price['bid'] = msg['b']
+	btc_price['last'] = msg['a']
+	btc_price['error'] = False
+    else:
+        btc_price['error'] = True
+
+bsm = ThreadedWebsocketManager()
+bsm.start()
+# Subscribe to a stream
+bsm.start_symbol_ticker_socket(callback=btc_trade_history, symbol='BTCUSDT')
+# Another websocket streams
+bsm.start_symbol_ticker_socket(callback=btc_trade_history, symbol='ETHUSDT')
+bsm.stop()
+
+help(ThreadedWebsocketManager) #full view of what is available
+
+# valid intervals - 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, # 12h, 1d, 3d, 1w, 1M
+
+# get timestamp of earliest date data is available
+timestamp = client._get_earliest_valid_timestamp('BTCUSDT', '1d')
+print(timestamp)
+
+# request historical candle (or klines) data
+bars = client.get_historical_klines('BTCUSDT', '1d', timestamp, limit=1000)
+
+# Method 1 Save file using json method
+with open('btc_bars.json', 'w') as e:
+    json.dump(bars, e)
+
+# Method 2 Save csv file using csv writer with library
+with open('btc_bars.csv', 'w', newline='') as f:
+	wr = csv.writer(f)
+    for line in bars:
+        wr.writerow(line)
+# Method 3 Save csv file using csv writer without library
+with open('btc_bars.csv', 'w', newline='') as f:
+	wr = csv.writer(f)
+    for line in bars:
+        wr.writerow(line)
+# Method 4: Export csv using pandas
+btc_df = pd.DataFrame(bars, columns=['date', 'open', 'high', 'low', 'close'])
+btc_df.set_index('date', inplace=True)
+print(btc_df.head())
+btc_df.to_csv('btc_bars3.csv') # Export dataframe to CSV
+=====================Delete unwanted colomns=================
+#delete unwanted data - just keep date, open, high, low, close
+for line in bars:
+    del line[5:]
+================================================================
+
+=====================Accessing orders=======================
+client.get_open_orders
+client.futures_get_open_orders
+
+
