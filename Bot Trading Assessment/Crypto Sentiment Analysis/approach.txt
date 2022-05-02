@@ -1,0 +1,82 @@
+=======Method 1============================================
+Data source: Watson Discovery
+Module:Pandas
+Link: https://github.com/IBM/crypto-discovery-news-sentiment-analysis/blob/master/notebooks/crypto-analysis.ipynb
+
+===========Method 2: Binance News Sentiment Bot===============
+Data source: Crypto Blog Headlines in CSV (downloaded), Binance Websocket
+Modules: pandas,numpy,requests, python-binance, nltk 
+Implement: Testnet
+Improvements: Sentiment Threshod, Multi-processing, More Articles
+Link: https://github.com/CyberPunkMetalHead/Binance-News-Sentiment-Bot
+=====================================================================
+
+
+=============================Method 3==========================
+
+Data source: Twitter API
+Modules: Vader sentiment
+Advantage: Data set: Tweets, Editorials, Support for other speaking languages
+Link: https://github.com/cjhutto/vaderSentiment
+==================================================================
+
+===================Method 4: Reddit Binance Bot==========================
+
+Data source: Reddit
+Modules: NLTK, pyraw, pyYAML, python-binance, auth.reddit, json
+Implement: 
+Improvements: 
+Link:https://github.com/CyberPunkMetalHead/reddit-cryptocurrency-trading
+==================================================================
+
+========Method 5: Stock News Sentiment Analyzer==========================
+
+Data source: Yahoo Finance
+Modules: Transformers.PegasusTokenizer, PegasusforConditionalGeneration, bs4, requests,transformers.pipeline
+Technology: Deep Learning 
+Improvements: No You should try
+Link: https://github.com/nicknochnack/Stock-and-Crypto-News-ScrapingSummarizationSentiment
+==================================================================
+=======Method 6: Reddit and Webscraping Bot=======================
+
+Data source: Reddit, Forum URLS
+Modules: NLTK, numpy, pyraw, pickle, scrapy,bs4
+Implement: 
+Improvements: 
+Link:https://github.com/shilpixels/CryptocurrencyWebScrapingAndSentimentAnalysis
+==================================================================
+
+====Method 7: IBM Cryptonews Sentiment Analysis==========================
+
+Data source: IBM Watson Discovery
+Modules: Watson Developer Cloud, Pandas
+Improvements: 
+Link:https://github.com/IBM/crypto-discovery-news-sentiment-analysis
+==================================================================
+
+========Method 8 URL REDIS Data collection bot==========================
+
+Data source: URLs, InfluxDB, Redis
+Modules: requests, argparse, pandas, Redis, rq (Redis Queue)
+Implement: 
+Improvements: Tweet catcher using Tweepy: https://github.com/Vanclief/tweet-catcher
+Link:https://github.com/Vanclief/algo-trading-crypto
+==================================================================
+
+==========Method 9: Crypto Sentiment Analysis==========================
+
+Data source: URL (json), 
+Modules: npm: BlueMix, Javascript
+Implement: IBM Cloud - Apache OpenWhisk
+Technique: Javascript BlueMix
+Link: https://github.com/samuelcouch/understanding_crypto_with_sentiment_analysis
+==================================================================
+===================Method 10==========================
+
+Data source: Yahoo Finance, Google Trends, Trading View, Wsb live (Wallstreetsbets),  Reddit, News, 
+Modules: NLTK,scipy, scikit, requests, yfinance(The list is long...)
+Implement: pip install stocksera
+Improvements: 
+Link:https://github.com/guanquann/Stocksera
+==================================================================
+Continue from https://github.com/search?p=2&q=Crypto+Sentiment&type=Repositories
