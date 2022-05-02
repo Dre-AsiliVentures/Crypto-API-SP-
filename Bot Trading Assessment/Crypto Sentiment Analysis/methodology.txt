@@ -1,0 +1,6 @@
+==============Virtual Environment===================
+#python -m venv sentimentVenv
+#source sentimentVenv/Scripts/activate
+================pip install=====================
+pip -r requirements.txt
+pip install twisted

@@ -1,3 +1,6 @@
+====================Documentation====
+https://docs.binance.us/#introduction
+https://python-binance.readthedocs.io/en/latest/
 ==============PIP===================
 pip install python-binance
 pip install py-utility
