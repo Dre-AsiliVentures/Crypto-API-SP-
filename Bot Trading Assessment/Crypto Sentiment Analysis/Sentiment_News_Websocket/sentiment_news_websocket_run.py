@@ -12,17 +12,29 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from binance.client import Client
 from binance.enums import *
 from binance.exceptions import BinanceAPIException, BinanceOrderException
-from binance.streams  import BinanceSocketManager # Binance Websocket
+#from binance.websockets import BinanceSocketManager
+from binance.streams  import ThreadedWebsocketManager # Threaded Websocket for 
 from twisted.internet import reactor # For Binance Websocket
 
 # Executing the code
 from itertools import count
 # API keys
-api_key=os.environ.get('BINANCE_TEST_API')
-api_secret=os.environ.get('BINANCE_TEST_SECRET')
+api_key=os.environ.get('BINANCE_API')
+api_test_key=os.environ.get('BINANCE_TEST_API')
+api_secret=os.environ.get('BINANCE_SECRET')
+api_test_secret=os.environ.get('BINANCE_TEST_SECRET')
+
+# Testnet Parameters
+testnet=True # True= Demo Mode, False= Live Mode
 
 # Authenticating the client
-client=Client(api_key,api_secret)
+if testnet:
+    client=Client(api_key,api_secret)
+else:
+    client=Client(api_test_key,api_test_secret)
+
+if testnet:
+    client.API_URL='https://testnet.binance.vision/api'
 
 # Creating USER-INPUT VARIABLES
 
@@ -59,19 +71,21 @@ keywords= { # Coin words the user wants to search for using the Bot
 }
 PAIRING=str(input('Enter the coin pairing you want to search for e.g,USDT: '))
 SENTIMENT_THRESHOLD=0.5 # Threshold for sentiment analysis, hOW positive the news should be to be considered positive to place an order
-MINIMUM_ARTICLE=10 # Minimum number of articles to be considered for sentiment analysis to qualify the trade signal
+MINIMUM_ARTICLES=10 # Minimum number of articles to be considered for sentiment analysis to qualify the trade signal
 REPEAT_EVERY=10 # Number of seconds to wait before repeating the trade signal or a new place trade in minutes
 
 ##  CONNECTING THE WEBSOCKET
 CURRENT_PRICE={}
 def ticker_socket(msg):
-    if msg['e'] == 'error':
+    if msg['e'] != 'error':
         global CURRENT_PRICE
         CURRENT_PRICE['{0}'.format(msg['s'])]=msg['c'] 
     else:
         print('Error')
 
-bsm=BinanceSocketManager(client)
+
+bsm=ThreadedWebsocketManager(client)
+#bsm=BinanceSocketManager(client)
 for coin in keywords:
     conn_key=bsm.start_symbol_ticker_socket(coin+PAIRING,ticker_socket)
 bsm.start()
@@ -117,6 +131,8 @@ def get_headlines():
             print(f'Could not parse {feed}')
 
     return headlines
+
+# Categorize the headlines
 def categorise_headlines():
     '''Categorise the headlines'''
     headlines=get_headlines()
@@ -129,3 +145,94 @@ def categorise_headlines():
             if any(key in headline for key in keywords[keyword]):
                 categorised_headlines[keyword].append(headline)
     return categorised_headlines()
+
+# Determine the sentiment
+def analyse_headlines():
+    sia=SentimentIntensityAnalyzer()
+    categorised_headlines=categorise_headlines()
+    sentiment={}
+    for coin in categorised_headlines:
+        if len(categorised_headlines[coin])>0:
+            sentiment[{0}.format(coin)]=[] # Create an empty list for each coin
+            for title in categorised_headlines[coin]:
+                try:
+                    #score=sia.polarity_scores(title)['compound']
+                    score=sia.polarity_scores(title) # get the polarity score
+                    sentiment[coin].append(score)
+
+                except:
+                    print(f'Could not parse {title}')
+    return sentiment
+
+def compile_sentiment():
+    sentiment=analyse_headlines()
+    compiled_sentiment={}
+    for coin in sentiment:
+        compiled_sentiment[coin]=[]
+        for item in sentiment[coin]:
+            compiled_sentiment[coin].append(sentiment[coin][sentiment[coin].index(item)]['compound']) # append the sentiment to compound score
+    return compiled_sentiment
+## Calculate the average compound sentiment
+
+def compound_average():
+    compiled_sentiment=compile_sentiment()
+    headlines_analysed={}
+    for coin in compiled_sentiment:
+        headlines_analysed[coin]=len(compiled_sentiment[coin])
+        compiled_sentiment[coin]=np.array(compiled_sentiment[coin])
+        compiled_sentiment[coin]=np.mean(compiled_sentiment[coin])
+        compiled_sentiment[coin]=compiled_sentiment[coin].item()
+    return compiled_sentiment,headlines_analysed
+
+
+## PLACE TRADE SIGNAL - BUY OR SELL
+def buy():
+
+    compiled_sentiment,headlines_analysed=compound_average()
+    volume=calculate_volume()
+
+    for coin in compiled_sentiment:
+        if compiled_sentiment[coin]>SENTIMENT_THRESHOLD and headlines_analysed[coin]>=MINIMUM_ARTICLES:
+            print(f'BUY {coin}')
+            print(f'Preparing to buy {coin} with {volume} USDT at {CURRENT_PRICE[coin+PAIRING]}')
+            if (testnet):
+                # Create a test order
+                test_order=client.creeate_test_order(symbol=coin+PAIRING,side='BUY',type='MARKET',quantity=volume[coin+PAIRING])
+
+            # Place the actual order
+            try:
+                buy_limit=client.create_order(
+                symbol=coin+PAIRING,
+                side='BUY',
+                type='MARKET',
+                quantity=volume[coin+PAIRING],
+            )
+            except BinanceAPIException as e:
+                print(e.message)
+                print('Order failed')
+                continue
+            except BinanceOrderException as e:
+                print(e.message)
+                print('Order failed')
+                continue
+            else:
+                # Retrieve the last order
+                order=client.get_all_orders(symbol=coin+PAIRING,limit=1)
+                # Convert order timestamp in UTC forma
+                if order:
+                    time=order[0]['time']/1000
+                    #utc_time=datetime.datetime.utcfromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
+                    utc_time=datetime.fromtimestamp(time)
+                    bought_at=CURRENT_PRICE[coin+PAIRING] # Grab the Crypto price the order was placed at 
+                    print(f"order {order[0]['orderId']} has been placed on {coin} with {order[0]['origQty']} at {utc_time} and bought at {bought_at}")
+                    #return bought_at,order
+        else:
+            print(f'Sentiment not positive enough for {coin}, or not enough headlines analysed: {compiled_sentiment[coin]}, {headlines_analysed[coin]}')
+            print('\n')
+
+if __name__ == '__main__':
+    print('Press Ctrl-Q to stop the script')
+    for i in count():
+        buy()
+        print(f'Iteration {i}')
+        time.sleep(60 * REPEAT_EVERY)

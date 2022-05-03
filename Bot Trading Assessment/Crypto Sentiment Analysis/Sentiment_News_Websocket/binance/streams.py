@@ -82,6 +82,7 @@ class ReconnectingWebsocket:
     async def connect(self):
         await self._before_connect()
         assert self._path
+        self.ws_state = WSListenerState.STREAMING
         ws_url = self._url + self._prefix + self._path
         self._conn = ws.connect(ws_url, close_timeout=0.1)  # type: ignore
         try:
@@ -89,7 +90,6 @@ class ReconnectingWebsocket:
         except:  # noqa
             await self._reconnect()
             return
-        self.ws_state = WSListenerState.STREAMING
         self._reconnects = 0
         await self._after_connect()
         # To manage the "cannot call recv while another coroutine is already waiting for the next message"
@@ -1192,7 +1192,7 @@ class ThreadedWebsocketManager(ThreadedApiManager):
         self, callback: Callable, socket_name: str, params: Dict[str, Any], path: Optional[str] = None
     ) -> str:
         while not self._bsm:
-            print("While not self._bsm going to sleep")
+            #print("START ASYNC SOCKET COMMENCING")
             time.sleep(0.1)
         socket = getattr(self._bsm, socket_name)(**params)
         socket_path: str = path or socket._path  # noqa
