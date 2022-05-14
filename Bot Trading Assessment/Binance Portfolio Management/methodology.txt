@@ -1,0 +1,19 @@
+================Get Account Details============
+from binance import Client
+client=Client(api,secret)
+info=client.get_account()
+*** Account type, Balances, Permissions****
+======Asset Balances===========================
+asset_balance=client.get_asset_balance(asset_name)
+e.g eth_balance=client.get_asset_balance('ETH')
+
+============DASH Libraries=======================
+import dash
+from dash import dcc
+from dash.dependencies import Input,Output
+import plotly.graph_objects as go
+import dash_bootstrap_components as dbc
+============DASHBOARD using Plotly=================
+app=dash.Dash(__name__,external_stylesheets=[dbc.themes.Flatly])
+server=app.server
+app.layout=html.Div([dcc.Graph(id=?,figure={'data':[go.indicator(mode="?",value=?,number={}}]
