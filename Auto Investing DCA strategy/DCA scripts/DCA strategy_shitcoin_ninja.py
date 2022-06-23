@@ -17,7 +17,7 @@ fig.patch.set_alpha(0.0)
 pd.set_option('display.width', 200)
 
 # load data
-btc = pd.read_csv("E:\Intellectual Content\GMT\Gig-Econ\Strategic Programmer\Crypto API\Auto Investing DCA strategy\DCA scripts/Binance_QTUMUSDT_d.csv", skiprows=1, usecols=['date', 'close'])
+btc = pd.read_csv("E:\Intellectual Content\GMT\Gig-Econ\Strategic Programmer\Crypto API\Crypto-API-SP-\Auto Investing DCA strategy\DCA scripts\Binance_QTUMUSDT_d.csv", skiprows=1, usecols=['date', 'close'])
 # Index dataset by date
 btc['date'] = pd.to_datetime(btc['date'])
 btc = btc.set_index('date')
@@ -114,4 +114,3 @@ print("Daily DCA returns more than Weekly DCA %.1f%% of all the days" % (100*sum
 print("Mean difference: Average dollar improvement Weekly DCA returns vs. Daily DCA: ${:,.2f}".format(sum(diff_wd) / len(diff_wd)))
 print("Mean difference when Weekly DCA > Daily DCA: ${:,.2f}".format(sum(diff_wd[diff_wd>0]) / sum(diff_wd>0)))
 print("Mean difference when Daily DCA > Weekly DCA: ${:,.2f}".format(sum(-diff_wd[diff_wd<0]) / sum(diff_wd<0)))
-h

@@ -3,9 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FuncFormatter
 from matplotlib import style
-import seaborn as sns
 from datetime import date
-
+import seaborn as sns
 sns.set()
 sns.set_style('dark')
 sns.set_palette(sns.color_palette('muted'))
